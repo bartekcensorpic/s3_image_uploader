@@ -1,26 +1,25 @@
 import argparse
-from src.upload_directory import process_folder
+from src.downloader.download_bucket import download_bucket
 
 
 def init(args):
-    input_path = args.input_path
+    input_path = args.output_path
     bucket_name = args.bucket_name
     region_name = args.region_name
     aws_access_key_id = args.aws_access_key_id
     aws_secret_access_key = args.aws_secret_access_key
 
-    process_folder(
+    download_bucket(
         input_path, bucket_name, aws_access_key_id, aws_secret_access_key, region_name
     )
-
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Preprocessing the images")
 
     parser.add_argument(
-        "--input_path",
+        "--output_path",
         type=str,
-        help="Path to root folder with the folders of categories.",
+        help="Path to output folder with the where the folder will be downloaded to",
     )
 
     parser.add_argument(
