@@ -1,3 +1,4 @@
 import src.uploader.main as uploader
 
-uploader.main()
+if __name__ == '__main__':
+    uploader.main()

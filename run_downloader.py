@@ -1,4 +1,5 @@
 import src.downloader.main as downloader
 
-downloader.main()
+if __name__ == '__main__':
+    downloader.main()
 
