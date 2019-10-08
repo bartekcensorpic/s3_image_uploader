@@ -55,6 +55,7 @@ def upload_files(path:str, aws_key_id:str, aws_secret_access_key:str, aws_region
     )
     s3 = session.resource("s3")
     bucket = s3.Bucket(bucket_name)
+    counter = 0
 
     for subdir, dirs, files in os.walk(path):
         for file in files:
@@ -62,3 +63,6 @@ def upload_files(path:str, aws_key_id:str, aws_secret_access_key:str, aws_region
             with open(full_path, "rb") as data:
                 s3_file_name = full_path[len(path) + 1 :].replace('\\', '/')
                 bucket.put_object(Key=s3_file_name, Body=data)
+                print(f'Uploaded {s3_file_name}')
+                counter+=1
+    print(f'Finished, uploaded {counter} files')

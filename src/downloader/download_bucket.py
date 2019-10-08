@@ -20,6 +20,7 @@ def download_dir(prefix, local, bucket, s3_client):
     - bucket: s3 bucket with target contents
     - client: initialized s3 client object
     """
+    counter = 0
     keys = []
     dirs = []
     next_token = ''
@@ -49,3 +50,7 @@ def download_dir(prefix, local, bucket, s3_client):
         if not os.path.exists(os.path.dirname(dest_pathname)):
             os.makedirs(os.path.dirname(dest_pathname))
         s3_client.download_file(bucket, k, dest_pathname)
+        print(f'Downloaded: {k}')
+        counter +=1
+
+    print(f"Finished, downloaded {counter} files")
