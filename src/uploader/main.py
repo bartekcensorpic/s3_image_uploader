@@ -9,18 +9,23 @@ def init(args):
     aws_access_key_id = args.aws_access_key_id
     aws_secret_access_key = args.aws_secret_access_key
 
+    assert input_path is not None, "input_path can not be Null"
+    assert bucket_name is not None, "bucket_name can not be Null"
+    assert region_name is not None, "region_name can not be Null"
+    assert aws_access_key_id is not None, "aws_access_key_id can not be Null"
+    assert aws_secret_access_key is not None, "aws_secret_access_key can not be Null"
+
     process_folder(
         input_path, bucket_name, aws_access_key_id, aws_secret_access_key, region_name
     )
 
-
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Preprocessing the images")
+def main():
+    parser = argparse.ArgumentParser(description="Uploades indicated folder to S3 bucket")
 
     parser.add_argument(
         "--input_path",
         type=str,
-        help="Path to root folder with the folders of categories.",
+        help="Path to root folder with the folders of categories. ",
     )
 
     parser.add_argument(
@@ -38,3 +43,6 @@ if __name__ == "__main__":
     args = parser.parse_args()
     print(print(args))
     init(args)
+
+if __name__ == '__main__':
+    main()
