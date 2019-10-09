@@ -3,7 +3,6 @@ import boto3
 import os
 from botocore.exceptions import ClientError
 
-
 def process_folder(input_path: str,
                    bucket_name: str,
                    aws_access_key_id:str,
@@ -11,30 +10,6 @@ def process_folder(input_path: str,
                    region_name:str):
 
     upload_files(input_path,aws_access_key_id, aws_secret_access_key,region_name,bucket_name)
-
-
-def upload_file(file_name, bucket, object_name=None):
-    """Upload a file to an S3 bucket
-
-    :param file_name: File to upload
-    :param bucket: Bucket to upload to
-    :param object_name: S3 object name. If not specified then file_name is used
-    :return: True if file was uploaded, else False
-    """
-
-    # If S3 object_name was not specified, use file_name
-    if object_name is None:
-        object_name = file_name
-
-    # Upload the file
-    s3_client = boto3.client("s3")
-    try:
-        response = s3_client.upload_file(file_name, bucket, object_name)
-    except ClientError as e:
-        logging.error(e)
-        return False
-    return True
-
 
 def upload_files(path:str, aws_key_id:str, aws_secret_access_key:str, aws_region:str, bucket_name:str):
     """Uploads folder to bucket, preserving its structure
@@ -55,14 +30,28 @@ def upload_files(path:str, aws_key_id:str, aws_secret_access_key:str, aws_region
     )
     s3 = session.resource("s3")
     bucket = s3.Bucket(bucket_name)
-    counter = 0
+    upload_counter = 0
+    skipped_counter = 0
 
     for subdir, dirs, files in os.walk(path):
         for file in files:
             full_path = os.path.join(subdir, file)
-            with open(full_path, "rb") as data:
-                s3_file_name = full_path[len(path) + 1 :].replace('\\', '/')
-                bucket.put_object(Key=s3_file_name, Body=data)
-                print(f'Uploaded {s3_file_name}')
-                counter+=1
-    print(f'Finished, uploaded {counter} files')
+            s3_file_name = full_path[len(path) + 1:].replace('\\', '/')
+
+            #check if file exists on bucket if it goes to "image" folder
+            key = s3_file_name
+            objs = list(bucket.objects.filter(Prefix=key))
+            first_path_element = os.path.split(key)[0]
+            if len(objs) > 0 and objs[0].key == key and first_path_element == 'images':
+                print(f"File {s3_file_name} exists on bucket, skipping")
+                skipped_counter+=1
+            else:
+                #uploading to bucket
+                with open(full_path, "rb") as data:
+                    bucket.put_object(Key=s3_file_name, Body=data)
+                    print(f'Uploaded {s3_file_name}')
+                    upload_counter += 1
+
+
+    print(f'Finished, uploaded {upload_counter} files')
+    print(f'Skipped {skipped_counter} files')

@@ -51,6 +51,7 @@ def download_dir(prefix, local, bucket, s3_client):
         if not os.path.exists(os.path.dirname(dest_pathname)):
             os.makedirs(os.path.dirname(dest_pathname))
 
+        #check if image exists on disk, if exists then do not download
         splitted_path = os.path.split(k)
         first_element = splitted_path[0].lower()
         does_exists = os.path.exists(dest_pathname)
