@@ -20,7 +20,8 @@ def download_dir(prefix, local, bucket, s3_client):
     - bucket: s3 bucket with target contents
     - client: initialized s3 client object
     """
-    counter = 0
+    downloaded_counter = 0
+    skipped_counter = 0
     keys = []
     dirs = []
     next_token = ''
@@ -49,8 +50,18 @@ def download_dir(prefix, local, bucket, s3_client):
         dest_pathname = os.path.join(local, k)
         if not os.path.exists(os.path.dirname(dest_pathname)):
             os.makedirs(os.path.dirname(dest_pathname))
-        s3_client.download_file(bucket, k, dest_pathname)
-        print(f'Downloaded: {k}')
-        counter +=1
 
-    print(f"Finished, downloaded {counter} files")
+        splitted_path = os.path.split(k)
+        first_element = splitted_path[0].lower()
+        does_exists = os.path.exists(dest_pathname)
+
+        if not (first_element == 'images' and does_exists):
+            s3_client.download_file(bucket, k, dest_pathname)
+            print(f'Downloaded: {k}')
+            downloaded_counter +=1
+        else:
+            print('Skipped', k)
+            skipped_counter +=1
+
+    print(f"Finished, downloaded {downloaded_counter} files")
+    print(f"Skipped {skipped_counter} files")

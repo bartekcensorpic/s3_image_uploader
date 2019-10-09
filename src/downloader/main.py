@@ -21,7 +21,7 @@ def init(args):
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Downloads the whole S3 bucket to specified path",)
+    parser = argparse.ArgumentParser(description="Downloads the whole S3 bucket to specified path. To save transfer and time it does not overwrite items in folder '/images/ ",)
 
     parser.add_argument(
         "--output_path",
