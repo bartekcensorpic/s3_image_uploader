@@ -78,7 +78,7 @@ def upload_files(aws_key_id:str, aws_secret_access_key:str, aws_region:str, buck
 
         s3_file_name = new_name
         with open(old_path, "rb") as data:
-            bucket.put_object(Key=s3_file_name, Body=data)
+            bucket.put_object(Key=s3_file_name, Body=data, ExtraArgs={'ACL':'public-read'})
             print(f'Uploaded: {s3_file_name}')
             print(f'Original name: {old_path}')
             upload_counter += 1
