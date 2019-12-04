@@ -41,8 +41,13 @@ def process_folder(input_path: str,
     df['new_name'] = df['old_path'].map(lambda path: s3_bucket+ r'/' + prepare_new_name(path))
     df['image_url'] = df['new_name'].map(lambda path: os.path.splitext(path)[0])
 
-    df.to_csv(os.path.join(input_path,"amt_metadata.csv"), encoding='utf-8', index=False)
-    df.to_csv(os.path.join(input_path,"amt_filelist.csv"), encoding='utf-8', index=False, columns=['image_url'])
+    metadata_path =os.path.join(input_path,"amt_metadata.csv")
+    file_list_path = os.path.join(input_path,"amt_filelist.csv")
+    df.to_csv(metadata_path, encoding='utf-8', index=False)
+    df.to_csv(file_list_path, encoding='utf-8', index=False, columns=['image_url'])
+
+    df.loc[len(df)] = [metadata_path, s3_bucket+ r'/' +"amt_metadata.csv",""]
+    df.loc[len(df)] = [file_list_path, s3_bucket+ r'/' +"amt_filelist.csv",""]
 
     upload_files(aws_access_key_id, aws_secret_access_key,region_name,bucket_name, df)
 
@@ -74,9 +79,9 @@ def upload_files(aws_key_id:str, aws_secret_access_key:str, aws_region:str, buck
         s3_file_name = new_name
         with open(old_path, "rb") as data:
             bucket.put_object(Key=s3_file_name, Body=data)
-            print(f'Uploaded {s3_file_name}')
+            print(f'Uploaded: {s3_file_name}')
+            print(f'Original name: {old_path}')
             upload_counter += 1
-
 
 
     print(f'Finished, uploaded {upload_counter} files')
