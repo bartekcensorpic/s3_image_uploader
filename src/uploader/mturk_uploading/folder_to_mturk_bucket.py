@@ -1,6 +1,5 @@
 import argparse
-from src.uploader.upload_directory import process_folder
-
+from src.uploader.mturk_uploading.upload_directory import process_folder
 
 def init(args):
     input_path = args.input_path
